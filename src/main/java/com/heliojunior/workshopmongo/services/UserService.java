@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.heliojunior.workshopmongo.domain.User;
 import com.heliojunior.workshopmongo.dto.UserDTO;
@@ -31,6 +34,15 @@ public class UserService {
 		return repo.insert(obj);
 	}
 	
+	public void delete(String id) {
+		try {
+		repo.deleteById(id);
+		}catch(EmptyResultDataAccessException e) {
+			throw new ResourceAccessException(id);
+		}catch(DataIntegrityViolationException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public User fromDTO(UserDTO objDto) {
 		return new User(objDto.getId(), objDto.getName(), objDto.getEmail());
